@@ -1,7 +1,7 @@
 <?php
 /**
  * Pico Slideshare Slide List
- * Slideshareのスライドリストを取得しページとして追加するプラグイン
+ * Slideshareのスライドリストを取得しページとして追加する自動更新モジュール
  *
  * @author TakamiChie
  * @link http://onpu-tamago.net/
@@ -9,40 +9,35 @@
  * @version 1.0
  */
 class Pico_SlideshareList {
-
-  public function config_loaded(&$settings) {
+  
+  public function run($settings) {
+    if(empty($settings["slideshare"]) || 
+      empty($settings["slideshare"]["apikey"]) ||
+      empty($settings["slideshare"]["secret"]) ||
+      empty($settings["slideshare"]["username"]) ||
+      empty($settings["slideshare"]["directory"])) {
+      return;
+    }
     $apikey = $settings["slideshare"]["apikey"];
     $secret = $settings["slideshare"]["secret"];
     $user = $settings["slideshare"]["username"];
     $dir = $settings["slideshare"]["directory"];
-    $base_url = $settings['base_url'];
     $cdir = ROOT_DIR . $settings["content_dir"] . $dir;
-    $cachedir = CACHE_DIR . "slideshare/";
+    $cachedir = LOG_DIR . "slideshare/";
     $cachefile = $cachedir . "slides.xml";
     if(!file_exists($cachedir)){
       mkdir($cachedir, "0500", true);
     }
 		$list_url = "https://www.slideshare.net/api/2/get_slideshows_by_user?";
 
-    if(file_exists($cachefile)){
-      $filetime = new DateTime();
-      $filetime->setTimestamp(filemtime($cachefile));
-      $filetime->modify("+30 min");
-      $now = new DateTime();
-      if($filetime > $now){
-        // キャッシュ有効時は、読み取り処理自体が不要なためスキップ
-        return;
-      }
-    }else{
-      // キャッシュ無効なため、以前作成したファイルを全削除
-	    if($handle = opendir($cdir)){
-        while(false !== ($file = readdir($handle))){
-          if(!is_dir($file) && $file != "index.md"){
-            unlink($cdir. "/" . $file);
-          }
+    // 以前作成したファイルがあれば全削除
+    if($handle = opendir($cdir)){
+      while(false !== ($file = readdir($handle))){
+        if(!is_dir($file) && $file != "index.md"){
+          unlink($cdir. "/" . $file);
         }
-        closedir($handle);
-	    }
+      }
+      closedir($handle);
     }
     /* テキストファイル作成処理 */
     try{
