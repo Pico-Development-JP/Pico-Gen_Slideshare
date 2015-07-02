@@ -30,15 +30,6 @@ class Pico_SlideshareList {
     }
 		$list_url = "https://www.slideshare.net/api/2/get_slideshows_by_user?";
 
-    // 以前作成したファイルがあれば全削除
-    if($handle = opendir($cdir)){
-      while(false !== ($file = readdir($handle))){
-        if(!is_dir($file) && $file != "index.md"){
-          unlink($cdir. "/" . $file);
-        }
-      }
-      closedir($handle);
-    }
     /* テキストファイル作成処理 */
     try{
       // まずはXML読み込み
@@ -49,13 +40,15 @@ class Pico_SlideshareList {
         "ts" => $ts,
         "hash" => sha1($secret . $ts)
       );
+      $responce;
+      // まずはJSON読み込み
       $content = $this->curl_getcontents($list_url . http_build_query($params));
-
+      file_put_contents($cachefile, $content);
       $xml = new SimpleXMLElement($content);
       if(!$xml->Slideshow){
         throw new Exception($xml->Message);
       }
-      file_put_contents($cachefile, $content);
+      $this->removeBeforeScanned($cdir);
 
       foreach($xml->Slideshow as $s){
         // mdファイル作成
@@ -87,8 +80,16 @@ class Pico_SlideshareList {
       file_put_contents($cdir . "error.md", $page);
     }
 	}
-  
-  private function curl_getcontents($url)
+
+  /**
+   *
+   * ファイルをダウンロードする
+   *
+   * @param string $url URL
+   * @param array $responce レスポンスヘッダが格納される配列(参照渡し)。省略可能
+   *
+   */
+  private function curl_getcontents($url, &$responce = array())
   {
     $ch = curl_init();
     curl_setopt_array($ch, array(
@@ -100,11 +101,32 @@ class Pico_SlideshareList {
     	CURLOPT_USERAGENT => "Pico"));
 
     $content = curl_exec($ch);
+    if(!curl_errno($ch)) {
+      $responce = curl_getinfo($ch);
+    } 
     if(!$content){
       throw new Exception(curl_error($ch));
     }
     curl_close($ch);
     return $content;
+  }
+
+  /**
+   *
+   * 以前自動生成した原稿ファイルを全削除する
+   *
+   * @param string $cdir 対象のファイルが格納されているディレクトリパス
+   *
+   */
+  private function removeBeforeScanned($cdir){
+    if($handle = opendir($cdir)){
+      while(false !== ($file = readdir($handle))){
+        if(!is_dir($file) && $file != "index.md"){
+          unlink($cdir. "/" . $file);
+        }
+      }
+      closedir($handle);
+    }
   }
 }
 
