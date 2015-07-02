@@ -55,6 +55,7 @@ class Pico_SlideshareList {
         $t = array();
         array_push($t, $s->Language);
         array_push($t, $s->Format);
+        array_push($t, "embed");
         if($s->Download) array_push($t, "downloadable");
         $page = "/*\n";
         $page .= sprintf("  Title: %s\n", $s->Title);
