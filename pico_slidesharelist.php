@@ -72,13 +72,8 @@ class Pico_SlideshareList {
         file_put_contents($cdir . $s->ID . ".md", $page);
       }
     }catch(Exception $e){
-      $page = "/*\n";
-      $page .= sprintf("  Title: %s\n", "Slideshare Access Error");
-      $page .= sprintf("  Description: %s\n", "Slideshare接続処理でエラーが発生しました。" . $e->getMessage());
-      $page .= "*/\n";
-      $page .= "Slideshareに接続できませんでした。\n";
-      $page .= $e->getMessage();
-      file_put_contents($cdir . "error.md", $page);
+      echo "SlideShare Access Error\n";
+      echo $e->getMessage() . "\n";
     }
 	}
 
