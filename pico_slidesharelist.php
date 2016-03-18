@@ -64,7 +64,7 @@ class Pico_SlideshareList {
         $page .= sprintf("Title: %s\n", $s->Title);
         $page .= sprintf("Author: %s\n", $s->Username);
         $page .= sprintf("Date: %s\n", $s->Created);
-        $page .= sprintf("Description: %s\n", $s->Description);
+        $page .= sprintf("Description: %s\n", str_replace("\n", " ", $s->Description));
         $page .= sprintf("URL: %s\n", $s->URL);
         $page .= sprintf("Image: %s\n", strpos($s->ThumbnailURL, "//", 0) === 0 ? 
           "http:" . $s->ThumbnailURL : $s->ThumbnailURL);
