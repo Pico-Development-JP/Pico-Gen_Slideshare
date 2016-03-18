@@ -61,14 +61,14 @@ class Pico_SlideshareList {
         array_push($t, "embed");
         if($s->Download) array_push($t, "downloadable");
         $page = "---\n";
-        $page .= sprintf("Title: %s\n", $s->Title);
-        $page .= sprintf("Author: %s\n", $s->Username);
+        $page .= sprintf("Title: %s\n", $this->clean($s->Title));
+        $page .= sprintf("Author: %s\n", $this->clean($s->Username));
         $page .= sprintf("Date: %s\n", $s->Created);
-        $page .= sprintf("Description: %s\n", str_replace("\n", " ", $s->Description));
+        $page .= sprintf("Description: %s\n", $this->clean($s->Description));
         $page .= sprintf("URL: %s\n", $s->URL);
         $page .= sprintf("Image: %s\n", strpos($s->ThumbnailURL, "//", 0) === 0 ? 
           "http:" . $s->ThumbnailURL : $s->ThumbnailURL);
-        $page .= sprintf("Tag: %s\n", implode(", ", $t));
+        $page .= sprintf("Tag: %s\n", $this->clean(implode(", ", $t)));
         $page .= "---\n";
         $page .= htmlspecialchars_decode($s->Embed);
 
@@ -80,6 +80,18 @@ class Pico_SlideshareList {
     }
 	}
 
+  /**
+   * 文字列内のYAML的に不適切な文字を削除する
+   *
+   * @param string $text テキスト
+   * @return 文字の削除されたテキスト
+   */
+  private function clean($text)
+  {
+    $deletechars = array("*", "\n", "-", "&", "+");
+    return str_replace($deletechars, " ", $text);
+  }
+  
   /**
    *
    * ファイルをダウンロードする
