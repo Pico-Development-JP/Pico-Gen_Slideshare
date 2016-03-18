@@ -22,7 +22,7 @@ class Pico_SlideshareList {
     $secret = $settings["slideshare"]["secret"];
     $user = $settings["slideshare"]["username"];
     $dir = $settings["slideshare"]["directory"];
-    $cdir = ROOT_DIR . $settings["content_dir"] . $dir;
+    $cdir = $settings["content_dir"] . $dir;
     $cachedir = LOG_DIR . "slideshare/";
     $cachefile = $cachedir . "slides.xml";
     if(!file_exists($cdir)){
@@ -60,16 +60,16 @@ class Pico_SlideshareList {
         array_push($t, $s->Format);
         array_push($t, "embed");
         if($s->Download) array_push($t, "downloadable");
-        $page = "/*\n";
-        $page .= sprintf("  Title: %s\n", $s->Title);
-        $page .= sprintf("  Author: %s\n", $s->Username);
-        $page .= sprintf("  Date: %s\n", $s->Created);
-        $page .= sprintf("  Description: %s\n", $s->Description);
-        $page .= sprintf("  URL: %s\n", $s->URL);
-        $page .= sprintf("  Image: %s\n", strpos($s->ThumbnailURL, "//", 0) === 0 ? 
+        $page = "---\n";
+        $page .= sprintf("Title: %s\n", $s->Title);
+        $page .= sprintf("Author: %s\n", $s->Username);
+        $page .= sprintf("Date: %s\n", $s->Created);
+        $page .= sprintf("Description: %s\n", $s->Description);
+        $page .= sprintf("URL: %s\n", $s->URL);
+        $page .= sprintf("Image: %s\n", strpos($s->ThumbnailURL, "//", 0) === 0 ? 
           "http:" . $s->ThumbnailURL : $s->ThumbnailURL);
-        $page .= sprintf("  Tag: %s\n", implode(", ", $t));
-        $page .= "*/\n";
+        $page .= sprintf("Tag: %s\n", implode(", ", $t));
+        $page .= "---\n";
         $page .= htmlspecialchars_decode($s->Embed);
 
         file_put_contents($cdir . $s->ID . ".md", $page);
