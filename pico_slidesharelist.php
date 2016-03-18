@@ -68,7 +68,7 @@ class Pico_SlideshareList {
         $page .= sprintf("URL: %s\n", $s->URL);
         $page .= sprintf("Image: %s\n", strpos($s->ThumbnailURL, "//", 0) === 0 ? 
           "http:" . $s->ThumbnailURL : $s->ThumbnailURL);
-        $page .= sprintf("Tag: %s\n", $this->clean(implode(", ", $t)));
+        $page .= sprintf("Tags: %s\n", $this->clean(implode(", ", $t)));
         $page .= "---\n";
         $page .= htmlspecialchars_decode($s->Embed);
 
