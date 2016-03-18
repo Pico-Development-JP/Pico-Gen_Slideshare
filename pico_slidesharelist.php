@@ -25,6 +25,9 @@ class Pico_SlideshareList {
     $cdir = ROOT_DIR . $settings["content_dir"] . $dir;
     $cachedir = LOG_DIR . "slideshare/";
     $cachefile = $cachedir . "slides.xml";
+    if(!file_exists($cdir)){
+      mkdir($cdir, "0500", true);
+    }
     if(!file_exists($cachedir)){
       mkdir($cachedir, "0500", true);
     }
